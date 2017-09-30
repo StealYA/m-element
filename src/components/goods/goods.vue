@@ -2,14 +2,14 @@
 	<div class="goods">
 		<div class="menu-wrapper" ref="menuWrapper">
 			<ul>
-				<li v-for="item in goods" class="menu-item">
+				<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMeun(index,$event)">
 					<i v-show="item.type>0" class="icon"></i><span class="text border-1px">{{item.name}}</span>
 				</li>
 			</ul>
 		</div>
 		<div class="foods-wrapper" ref="foodWrapper">
 			<ul>
-				<li v-for="item in goods" class="food-list">
+				<li v-for="item in goods" class="food-list food-list-hook">
 					<h1 class="title">{{item.name}}</h1>
 					<ul>
 						<li v-for="food in item.foods" class="food-item border-1px">
@@ -47,7 +47,9 @@
 		},
 		data() {
 			return {
-				goods: []
+				goods: [],
+				listHeight: [],
+				ScrollY: 0
 			};
 		},
 		created() {
@@ -57,17 +59,55 @@
 					this.goods = res.data;
 					this.$nextTick(() => {
 						this._initScroll();
-					})
-					
-				}
+						this._calculateHeight();
+					});
+				};
 				//console.log(this.goods);
 			})
 		},
-		methods: {
-			_initScroll() {
-				this.menuScroll = new BScroll(this.$refs.menuWrapper,{});
+		computed: {
+			currentIndex() {
+				for (let i = 0; i < this.listHeight.length; i++) {
+					let height1 = this.listHeight[i];
+					let height2 = this.listHeight[i+1];
 
-				this.foodScroll = new BScroll(this.$refs.foodWrapper,{});
+					if (!height2 || (this.ScrollY >= height1 && this.ScrollY < height2)) {
+						return i;
+					};
+				};
+			}
+		},
+		methods: {
+			selectMeun(index,event) {
+				if (!event._constructed) {
+					return;
+				};
+				let foodList = this.$refs.foodWrapper.getElementsByClassName('food-list-hook'); 
+				let el = foodList[index];
+				this.foodScroll.scrollToElement(el,300);
+			},
+			_initScroll() {
+				this.menuScroll = new BScroll(this.$refs.menuWrapper,{
+					click:true
+				});
+
+				this.foodScroll = new BScroll(this.$refs.foodWrapper,{
+					probeType:3
+				});
+
+				this.foodScroll.on('scroll', (pos) => {
+					this.ScrollY = Math.abs(Math.round(pos.y));
+				});
+			},
+			_calculateHeight() {
+				let foodList = this.$refs.foodWrapper.getElementsByClassName('food-list-hook');
+				let height = 0;
+				this.listHeight.push(height);
+				for(let i = 0; i < foodList.length; i++) {
+					let item = foodList[i];
+					height += item.clientHeight;
+					this.listHeight.push(height);
+				};
 			}
 		}
 	};
@@ -94,6 +134,13 @@
 				height:54px
 				line-height:14px
 				padding:0px 12px
+				&.current
+					position:relative
+					margin-top:-1px
+					background:#fff
+					font-weight:700
+					.text
+						border-none()
 				.icon
 					display:inline-block
 				.text
