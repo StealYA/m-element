@@ -1,6 +1,6 @@
 # vue
 
-> vue --  moblie elenmt project
+> vue --  moblie element project
 
 ## Build Setup
 
