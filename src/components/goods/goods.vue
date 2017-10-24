@@ -33,12 +33,13 @@
 				</li>
 			</ul>
 		</div>
+		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
 
 <script>
 	import BScroll from 'better-scroll';
-
+	import shopcart from '../../components/shopcart/shopcart.vue';
 	const ERR_OK = 0;
 
 	export default {
@@ -109,6 +110,9 @@
 					this.listHeight.push(height);
 				};
 			}
+		},
+		components: {
+			shopcart
 		}
 	};
 </script>
