@@ -1,6 +1,6 @@
 # vue
 
-> A Vue.js project
+> vue --  moblie element project
 
 ## Build Setup
 
